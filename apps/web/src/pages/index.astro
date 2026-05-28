@@ -1,11 +1,69 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { auth } from "../lib/auth";
+import Layout from "../layouts/Layout.astro";
+import { AuthPanel } from "../components/auth-panel";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const session = await auth.api.getSession({
+  headers: Astro.request.headers,
+});
+
+const sessionSummary = session
+  ? {
+      user: {
+        name: session.user.name ?? null,
+        email: session.user.email,
+        image: session.user.image ?? null,
+      },
+    }
+  : null;
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Auth, email, and Prisma foundation">
+  <main class="mx-auto flex min-h-screen w-full max-w-6xl items-center px-6 py-12 sm:px-10">
+    <div class="grid w-full gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+      <section class="max-w-2xl">
+        <p class="inline-flex items-center rounded-full border border-black/10 bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-stone-700 backdrop-blur">
+          Monorepo foundation
+        </p>
+        <h1 class="mt-8 text-5xl font-semibold tracking-tight text-stone-950 sm:text-6xl">
+          Google auth, Resend email, and Prisma are now wired together.
+        </h1>
+        <p class="mt-6 max-w-xl text-lg leading-8 text-stone-600">
+          This Astro app now shares auth state, database persistence, and transactional
+          email infrastructure with the rest of the workspace through reusable packages.
+        </p>
+
+        <div class="mt-10 grid gap-4 sm:grid-cols-3">
+          <div class="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
+            <div class="text-xs uppercase tracking-[0.28em] text-stone-500">
+              Auth
+            </div>
+            <div class="mt-3 text-base font-medium text-stone-950">
+              Better Auth + Google OAuth
+            </div>
+          </div>
+          <div class="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
+            <div class="text-xs uppercase tracking-[0.28em] text-stone-500">
+              Database
+            </div>
+            <div class="mt-3 text-base font-medium text-stone-950">
+              Prisma + PostgreSQL
+            </div>
+          </div>
+          <div class="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
+            <div class="text-xs uppercase tracking-[0.28em] text-stone-500">
+              Email
+            </div>
+            <div class="mt-3 text-base font-medium text-stone-950">
+              Resend delivery log
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="lg:pt-8">
+        <AuthPanel client:load session={sessionSummary} />
+      </div>
+    </div>
+  </main>
 </Layout>

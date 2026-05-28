@@ -4,5 +4,16 @@
   "private": true,
   "type": "module",
   "main": "src/index.ts",
-  "types": "src/index.ts"
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check-types": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@better-auth/prisma-adapter": "^1.6.11",
+    "@creator-suite/db": "workspace:*",
+    "@creator-suite/email": "workspace:^",
+    "better-auth": "^1.6.11",
+    "zod": "^4.4.3"
+  }
 }
