@@ -4,5 +4,28 @@
   "private": true,
   "type": "module",
   "main": "src/index.ts",
-  "types": "src/index.ts"
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "prisma generate --schema prisma/schema && tsc -p tsconfig.json",
+    "check-types": "prisma generate --schema prisma/schema && tsc -p tsconfig.json",
+    "prisma:generate": "prisma generate --schema prisma/schema",
+    "prisma:migrate": "prisma migrate dev --schema prisma/schema",
+    "prisma:push": "prisma db push --schema prisma/schema",
+    "prisma:studio": "prisma studio --schema prisma/schema",
+    "db:seed": "tsx src/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx src/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.10",
+    "prisma": "^7.0.0",
+    "tsx": "^4.22.3"
+  }
 }

@@ -1,4 +1,2 @@
-export * from "./schema";
-export * from "./queries";
-export * from "./repositories";
-export * from "./seeds";
+export * from "./client";
+export * from "./seeds/index";
