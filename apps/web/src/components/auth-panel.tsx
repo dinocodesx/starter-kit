@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient } from "@creator-suite/auth";
+import { authClient } from "../lib/auth-client";
 import { useState } from "react";
 
 interface SessionUser {

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -30,7 +30,7 @@
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.6.11",
     "@creator-suite/db": "workspace:*",
-    "@creator-suite/email": "workspace:^",
+    "@creator-suite/email": "workspace:*",
     "better-auth": "^1.6.11",
     "zod": "^4.4.3"
   },

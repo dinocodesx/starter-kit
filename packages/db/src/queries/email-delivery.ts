@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from "../client";
+import type { EmailDeliveryStatus, Prisma, PrismaClient } from "../client";
 
 export async function createEmailDeliveryRecord(
   prisma: PrismaClient,
@@ -21,7 +21,7 @@ export async function createEmailDeliveryRecord(
       subject: data.subject,
       payload: data.payload ?? {},
       provider: data.provider ?? "resend",
-      status: "queued",
+      status: "queued" as EmailDeliveryStatus,
     },
   });
 }
@@ -34,7 +34,7 @@ export async function markEmailDeliverySent(
   return prisma.emailDelivery.update({
     where: { id },
     data: {
-      status: "sent",
+      status: "sent" as EmailDeliveryStatus,
       providerMessageId,
       sentAt: new Date(),
     },
@@ -49,7 +49,7 @@ export async function markEmailDeliveryFailed(
   return prisma.emailDelivery.update({
     where: { id },
     data: {
-      status: "failed",
+      status: "failed" as EmailDeliveryStatus,
       error,
     },
   });

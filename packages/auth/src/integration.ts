@@ -1,5 +1,5 @@
-import { prisma } from "@creator-suite/db";
-import { createEmailService } from "@creator-suite/email";
+import { prisma, createPrismaDeliveryStore } from "@creator-suite/db";
+import { createEmailService, readEmailEnvironment } from "@creator-suite/email";
 import type { EmailService } from "@creator-suite/email";
 import { createAuth } from "./server/index";
 import { readAuthEnvironment } from "./config/index";
@@ -22,12 +22,16 @@ export function createFullAuthStack(options: FullAuthStackOptions): FullAuthStac
 
   const appName = options.appName ?? process.env.APP_NAME ?? "your workspace";
 
+  const emailEnv = readEmailEnvironment({
+    ...process.env,
+    APP_NAME: process.env.APP_NAME ?? appName,
+  });
+
   const emailService = createEmailService({
-    prisma,
-    resendApiKey: process.env.RESEND_API_KEY ?? "",
-    fromAddress:
-      process.env.RESEND_FROM_ADDRESS ?? "Onboarding <onboarding@resend.dev>",
-    appName,
+    store: createPrismaDeliveryStore(prisma),
+    resendApiKey: emailEnv.resendApiKey,
+    fromAddress: emailEnv.fromAddress,
+    appName: emailEnv.appName,
   });
 
   const auth = createAuth({

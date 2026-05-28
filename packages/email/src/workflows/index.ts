@@ -1,9 +1,4 @@
-import type { EmailDelivery, PrismaClient } from "@creator-suite/db";
-import {
-  createEmailDeliveryRecord,
-  markEmailDeliveryFailed,
-  markEmailDeliverySent,
-} from "@creator-suite/db";
+import type { DeliveryRecord, DeliveryStore } from "../store";
 import { randomUUID } from "node:crypto";
 import { createResendClient } from "../senders/index";
 import {
@@ -31,7 +26,7 @@ export interface SendEmailInput {
 }
 
 export interface SendEmailResult {
-  delivery: EmailDelivery;
+  delivery: DeliveryRecord;
   resendMessageId: string;
 }
 
@@ -49,7 +44,7 @@ export interface EmailService {
 }
 
 export interface CreateEmailServiceOptions {
-  prisma: PrismaClient;
+  store: DeliveryStore;
   resendApiKey: string;
   fromAddress?: string;
   appName?: string;
@@ -80,12 +75,18 @@ function stringifyError(error: unknown) {
 }
 
 export function createEmailService({
-  prisma,
+  store,
   resendApiKey,
   fromAddress = "Onboarding <onboarding@resend.dev>",
   appName = "your workspace",
 }: CreateEmailServiceOptions): EmailService {
-  const resend = resendApiKey ? createResendClient(resendApiKey) : null;
+  if (!resendApiKey) {
+    throw new Error(
+      "resendApiKey is required to create the email service. Set RESEND_API_KEY in your environment.",
+    );
+  }
+
+  const resend = createResendClient(resendApiKey);
 
   async function sendEmail(input: SendEmailInput) {
     const recipients = normalizeRecipients(input.to);
@@ -96,7 +97,7 @@ export function createEmailService({
     }
 
     const deliveryKey = input.deliveryKey ?? buildDeliveryKey(input.template);
-    const delivery = await createEmailDeliveryRecord(prisma, {
+    const delivery = await store.create({
       userId: input.userId ?? null,
       deliveryKey,
       template: input.template,
@@ -110,10 +111,6 @@ export function createEmailService({
     });
 
     try {
-      if (!resend) {
-        throw new Error("RESEND_API_KEY is required to send emails.");
-      }
-
       const { data, error } = await resend.emails.send({
         from: input.from ?? fromAddress,
         to: recipients,
@@ -128,14 +125,14 @@ export function createEmailService({
         );
       }
 
-      await markEmailDeliverySent(prisma, delivery.id, data.id);
+      const updatedDelivery = await store.markSent(delivery.id, data.id);
 
       return {
-        delivery,
+        delivery: updatedDelivery,
         resendMessageId: data.id,
       };
     } catch (error) {
-      await markEmailDeliveryFailed(prisma, delivery.id, stringifyError(error));
+      await store.markFailed(delivery.id, stringifyError(error));
       throw error;
     }
   }
