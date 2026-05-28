@@ -1,5 +1,20 @@
 import { prisma } from "../client";
 
+/**
+ * Seeds the database with a minimal, consistent set of development fixtures.
+ *
+ * All inserts use `upsert` so the function is idempotent — running it multiple
+ * times against the same database is safe and will not create duplicate rows.
+ *
+ * What gets seeded:
+ * - **4 Users** — one admin and three named users, each with a unique email.
+ * - **4 Sessions** — one 7-day session token per user.
+ * - **4 Accounts** — one Google OAuth account per user.
+ * - **4 Verification records** — one email-verification code per user slot,
+ *   valid for 24 hours.
+ * - **4 EmailDelivery records** — one `sent` welcome-email delivery log per
+ *   user, matching the template name and subject used in production.
+ */
 export async function seed() {
   console.log("Seeding database...");
 

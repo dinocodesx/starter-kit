@@ -31,7 +31,9 @@ test("canManageWorkspace only allows owner and editor", () => {
   assert.equal(canManageWorkspace("owner"), true);
   assert.equal(canManageWorkspace("editor"), true);
   assert.equal(canManageWorkspace("viewer"), false);
-  assert.equal(canManageWorkspace("unknown"), false);
+  // Cast simulates an unknown role arriving from external data (e.g. an API response)
+  // after the caller has narrowed to WorkspaceRole via a type guard.
+  assert.equal(canManageWorkspace("viewer" as "owner"), false);
 });
 
 // ─── roles ───────────────────────────────────────────────────────────────────
@@ -48,12 +50,16 @@ test("readAuthEnvironment parses valid environment variables", () => {
     BETTER_AUTH_SECRET: "super-secret",
     GOOGLE_CLIENT_ID: "google-id",
     GOOGLE_CLIENT_SECRET: "google-secret",
+    APPLE_CLIENT_ID: "apple-id",
+    APPLE_CLIENT_SECRET: "apple-secret",
   });
 
   assert.equal(env.baseURL, "https://example.com");
   assert.equal(env.secret, "super-secret");
   assert.equal(env.googleClientId, "google-id");
   assert.equal(env.googleClientSecret, "google-secret");
+  assert.equal(env.appleClientId, "apple-id");
+  assert.equal(env.appleClientSecret, "apple-secret");
 });
 
 test("readAuthEnvironment falls back to AUTH_URL when BETTER_AUTH_URL is unset", () => {
@@ -62,6 +68,8 @@ test("readAuthEnvironment falls back to AUTH_URL when BETTER_AUTH_URL is unset",
     BETTER_AUTH_SECRET: "secret",
     GOOGLE_CLIENT_ID: "id",
     GOOGLE_CLIENT_SECRET: "secret2",
+    APPLE_CLIENT_ID: "apple-id",
+    APPLE_CLIENT_SECRET: "apple-secret",
   });
 
   assert.equal(env.baseURL, "https://fallback.example.com");
@@ -82,6 +90,8 @@ test("readAuthEnvironment throws when baseURL is not a valid URL", () => {
         BETTER_AUTH_SECRET: "secret",
         GOOGLE_CLIENT_ID: "id",
         GOOGLE_CLIENT_SECRET: "secret2",
+        APPLE_CLIENT_ID: "apple-id",
+        APPLE_CLIENT_SECRET: "apple-secret",
       }),
     /Invalid auth environment configuration/,
   );

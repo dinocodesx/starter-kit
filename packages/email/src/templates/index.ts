@@ -2,6 +2,14 @@ export const emailTemplates = ["welcome", "upgrade", "trial-ending"] as const;
 
 export type EmailTemplateName = (typeof emailTemplates)[number];
 
+/**
+ * Escapes the five characters that have special meaning in HTML so that
+ * user-supplied strings can be safely interpolated into HTML email bodies
+ * without risk of XSS or broken markup.
+ *
+ * Replaces: `&` → `&amp;`, `<` → `&lt;`, `>` → `&gt;`,
+ *           `"` → `&quot;`, `'` → `&#39;`.
+ */
 function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -16,6 +24,19 @@ export interface WelcomeEmailTemplateInput {
   userName?: string | null;
 }
 
+/**
+ * Renders the welcome email sent to a user immediately after their account is
+ * created.
+ *
+ * Falls back to `"there"` when `userName` is not provided or is blank, so the
+ * greeting is always grammatically complete ("Welcome, there." rather than
+ * "Welcome, .").
+ *
+ * Returns an object with three fields:
+ * - `subject` — the email subject line.
+ * - `html`    — the full HTML body, with all user-supplied values escaped.
+ * - `text`    — the plain-text fallback for email clients that do not render HTML.
+ */
 export function renderWelcomeEmail({
   appName,
   userName,
@@ -48,6 +69,14 @@ export function renderWelcomeEmail({
   };
 }
 
+/**
+ * Renders the upgrade confirmation email sent when a workspace's plan is
+ * changed to a paid tier.
+ *
+ * `message` defaults to a generic upgrade notice and is always HTML-escaped
+ * before being embedded in the body, so callers can pass arbitrary strings
+ * from the billing system without risk.
+ */
 export function renderUpgradeEmail(appName: string, message = "Your workspace has been upgraded.") {
   return {
     subject: `${appName} upgrade`,
@@ -56,6 +85,14 @@ export function renderUpgradeEmail(appName: string, message = "Your workspace ha
   };
 }
 
+/**
+ * Renders the trial-ending reminder email sent a few days before a
+ * workspace's free trial expires.
+ *
+ * `message` defaults to a generic reminder and is HTML-escaped before use,
+ * allowing dynamic copy (e.g. including the exact expiry date) to be passed
+ * in safely.
+ */
 export function renderTrialEndingEmail(appName: string, message = "Your trial is ending soon.") {
   return {
     subject: `${appName} trial ending soon`,

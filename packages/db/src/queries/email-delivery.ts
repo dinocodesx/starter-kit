@@ -1,5 +1,14 @@
 import type { EmailDeliveryStatus, Prisma, PrismaClient } from "../client";
 
+/**
+ * Inserts a new `EmailDelivery` row with status `queued`.
+ *
+ * This is the low-level query used when a send attempt begins. It persists
+ * the record before the provider API is called so that every attempt is
+ * tracked even if the network call never completes. `deliveryKey` must be
+ * unique — the schema enforces this with a `@unique` constraint so duplicate
+ * inserts are rejected at the database level.
+ */
 export async function createEmailDeliveryRecord(
   prisma: PrismaClient,
   data: {
@@ -26,6 +35,14 @@ export async function createEmailDeliveryRecord(
   });
 }
 
+/**
+ * Marks an existing delivery record as `sent` and records the provider's
+ * message ID and the time the send was confirmed.
+ *
+ * `providerMessageId` is the ID returned by Resend (or whichever email
+ * provider is in use) and can be used to look up delivery events and webhooks
+ * in the provider dashboard.
+ */
 export async function markEmailDeliverySent(
   prisma: PrismaClient,
   id: string,
@@ -41,6 +58,14 @@ export async function markEmailDeliverySent(
   });
 }
 
+/**
+ * Marks an existing delivery record as `failed` and stores the error message
+ * for debugging and potential retry logic.
+ *
+ * Called after a send attempt throws so that the failure is visible in the
+ * delivery log and can be queried (e.g. to build a failed-sends dashboard or
+ * to trigger automated retries).
+ */
 export async function markEmailDeliveryFailed(
   prisma: PrismaClient,
   id: string,

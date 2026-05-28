@@ -32,6 +32,9 @@ export function AuthPanel({ session }: AuthPanelProps) {
         callbackURL: "/",
         newUserCallbackURL: "/",
       });
+      // No setIsSigningIn(false) here — the button intentionally stays in
+      // "Redirecting..." state while the browser navigates away. It is only
+      // reset on error so the user can try again.
     } catch (signInError) {
       setError(
         signInError instanceof Error
