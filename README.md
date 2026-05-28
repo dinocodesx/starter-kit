@@ -1,1 +1,1 @@
-# starter kit
+# smolive
