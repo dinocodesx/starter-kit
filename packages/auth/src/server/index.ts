@@ -1,18 +1,13 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "@better-auth/prisma-adapter";
 import type { PrismaClient } from "@creator-suite/db";
-import { authConfig } from "../config/index.js";
+import { authConfig } from "../config/index";
 
 export interface WelcomeEmailUser {
   id: string;
   email: string;
   name: string | null;
   image?: string | null;
-}
-
-export interface WelcomeEmailHookInput {
-  appName: string;
-  user: WelcomeEmailUser;
 }
 
 export interface CreateAuthOptions {
@@ -22,7 +17,7 @@ export interface CreateAuthOptions {
   googleClientId: string;
   googleClientSecret: string;
   appName?: string;
-  sendWelcomeEmail?: (input: WelcomeEmailHookInput) => Promise<unknown>;
+  onUserCreated?: (user: WelcomeEmailUser) => Promise<void>;
 }
 
 function getTrustedOrigins(baseURL: string) {
@@ -51,21 +46,16 @@ export function createAuth(options: CreateAuthOptions) {
       user: {
         create: {
           after: async (user) => {
-            if (!options.sendWelcomeEmail) {
-              return;
-            }
-
-            void options.sendWelcomeEmail({
-              appName,
-              user: {
+            if (options.onUserCreated) {
+              void options.onUserCreated({
                 id: user.id,
                 email: user.email,
                 name: user.name ?? null,
                 image: user.image ?? null,
-              },
-            }).catch((error: unknown) => {
-              console.error("[auth] welcome email failed", error);
-            });
+              }).catch((error: unknown) => {
+                console.error("[auth] onUserCreated hook failed", error);
+              });
+            }
           },
         },
       },

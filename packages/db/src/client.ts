@@ -1,14 +1,6 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import dotenv from "dotenv";
 import { PrismaClient } from "./generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 type PrismaGlobal = typeof globalThis & {
   __smolivePrisma?: PrismaClient;
@@ -40,4 +32,4 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export { PrismaClient };
-export type { Prisma } from "./generated/prisma/client";
+export type { Prisma, EmailDelivery } from "./generated/prisma/client";

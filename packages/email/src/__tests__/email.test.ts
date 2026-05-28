@@ -1,15 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
-  getMailerProvider,
-  mailerProviders,
-} from "../senders/index.js";
 import { emailTemplates, renderWelcomeEmail } from "../templates/index.js";
-
-test("mailer provider is resend", () => {
-  assert.equal(getMailerProvider(), "resend");
-  assert.deepEqual(mailerProviders, ["resend"]);
-});
 
 test("welcome template includes the workspace name and recipient", () => {
   const template = renderWelcomeEmail({

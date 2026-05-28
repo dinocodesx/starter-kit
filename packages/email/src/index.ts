@@ -1,3 +1,3 @@
-export * from "./templates/index.js";
-export * from "./senders/index.js";
-export * from "./workflows/index.js";
+export * from "./templates/index";
+export * from "./senders/index";
+export * from "./workflows/index";

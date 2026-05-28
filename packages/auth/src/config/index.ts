@@ -18,8 +18,8 @@ export function readAuthEnvironment(env: NodeJS.ProcessEnv = process.env): AuthE
   });
 
   if (!result.success) {
-    const errors = result.error.errors
-      .map((e) => `${e.path.join(".")}: ${e.message}`)
+    const errors = result.error.issues
+      .map((e: z.ZodIssue) => `${e.path.join(".")}: ${e.message}`)
       .join(", ");
     throw new Error(`Invalid auth environment configuration: ${errors}`);
   }

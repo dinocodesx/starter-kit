@@ -1,4 +1,4 @@
-import { createFullAuthStack } from "@creator-suite/auth";
+import { createFullAuthStack } from "@creator-suite/auth/integration";
 
 export const { auth, emailService } = createFullAuthStack({
   defaultBaseURL: "http://localhost:3000",

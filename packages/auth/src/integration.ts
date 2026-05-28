@@ -1,14 +1,20 @@
 import { prisma } from "@creator-suite/db";
 import { createEmailService } from "@creator-suite/email";
-import { createAuth } from "./server/index.js";
-import { readAuthEnvironment } from "./config/index.js";
+import type { EmailService } from "@creator-suite/email";
+import { createAuth } from "./server/index";
+import { readAuthEnvironment } from "./config/index";
 
 export interface FullAuthStackOptions {
   defaultBaseURL: string;
   appName?: string;
 }
 
-export function createFullAuthStack(options: FullAuthStackOptions) {
+export interface FullAuthStack {
+  auth: ReturnType<typeof createAuth>;
+  emailService: EmailService;
+}
+
+export function createFullAuthStack(options: FullAuthStackOptions): FullAuthStack {
   const authEnv = readAuthEnvironment({
     ...process.env,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL ?? options.defaultBaseURL,
@@ -31,7 +37,7 @@ export function createFullAuthStack(options: FullAuthStackOptions) {
     googleClientId: authEnv.googleClientId,
     googleClientSecret: authEnv.googleClientSecret,
     appName,
-    sendWelcomeEmail: async ({ user }) => {
+    onUserCreated: async (user) => {
       await emailService.sendWelcomeEmail({
         email: user.email,
         userId: user.id,

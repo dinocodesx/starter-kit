@@ -1,16 +1,16 @@
-import type { PrismaClient } from "@creator-suite/db";
+import type { EmailDelivery, PrismaClient } from "@creator-suite/db";
 import {
   createEmailDeliveryRecord,
   markEmailDeliveryFailed,
   markEmailDeliverySent,
 } from "@creator-suite/db";
 import { randomUUID } from "node:crypto";
-import { createResendClient } from "../senders/index.js";
+import { createResendClient } from "../senders/index";
 import {
   renderTrialEndingEmail,
   renderUpgradeEmail,
   renderWelcomeEmail,
-} from "../templates/index.js";
+} from "../templates/index";
 
 export interface EmailRecipient {
   email: string;
@@ -28,6 +28,24 @@ export interface SendEmailInput {
   payload?: Record<string, unknown>;
   deliveryKey?: string;
   from?: string;
+}
+
+export interface SendEmailResult {
+  delivery: EmailDelivery;
+  resendMessageId: string;
+}
+
+export interface EmailService {
+  sendEmail: (input: SendEmailInput) => Promise<SendEmailResult>;
+  sendWelcomeEmail: (recipient: EmailRecipient) => Promise<SendEmailResult>;
+  sendUpgradeEmail: (
+    message: string,
+    to: string | string[],
+  ) => Promise<SendEmailResult>;
+  sendTrialEndingEmail: (
+    message: string,
+    to: string | string[],
+  ) => Promise<SendEmailResult>;
 }
 
 export interface CreateEmailServiceOptions {
@@ -66,13 +84,18 @@ export function createEmailService({
   resendApiKey,
   fromAddress = "Onboarding <onboarding@resend.dev>",
   appName = "your workspace",
-}: CreateEmailServiceOptions) {
+}: CreateEmailServiceOptions): EmailService {
   const resend = resendApiKey ? createResendClient(resendApiKey) : null;
 
   async function sendEmail(input: SendEmailInput) {
     const recipients = normalizeRecipients(input.to);
-    const deliveryKey = input.deliveryKey ?? buildDeliveryKey(input.template);
     const recipientEmail = recipients[0];
+
+    if (!recipientEmail) {
+      throw new Error("At least one recipient is required to send an email.");
+    }
+
+    const deliveryKey = input.deliveryKey ?? buildDeliveryKey(input.template);
     const delivery = await createEmailDeliveryRecord(prisma, {
       userId: input.userId ?? null,
       deliveryKey,
