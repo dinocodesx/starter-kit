@@ -13,6 +13,8 @@ export interface CreateWaitlistEntryInput {
   willingToSwitch?: string | null;
 }
 
+export type WaitlistStatus = "PENDING" | "APPROVED" | "REJECTED";
+
 /**
  * Creates a new waitlist entry.
  */
@@ -52,7 +54,7 @@ export async function getWaitlistEntries(prisma: PrismaClient): Promise<Waitlist
 export async function updateWaitlistStatus(
   prisma: PrismaClient,
   id: string,
-  status: string
+  status: WaitlistStatus
 ): Promise<WaitlistEntry> {
   return prisma.waitlistEntry.update({
     where: { id },
