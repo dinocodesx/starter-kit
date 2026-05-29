@@ -1,7 +1,7 @@
 enum EmailDeliveryStatus {
-  queued
-  sent
-  failed
+  QUEUED
+  SENT
+  FAILED
 }
 
 model EmailDelivery {
@@ -14,7 +14,7 @@ model EmailDelivery {
   subject           String
   payload           Json?
   providerMessageId String?             @unique
-  status            EmailDeliveryStatus @default(queued)
+  status            EmailDeliveryStatus @default(QUEUED)
   error             String?
   sentAt            DateTime?
   createdAt         DateTime            @default(now())

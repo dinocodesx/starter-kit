@@ -1,0 +1,18 @@
+model WaitlistEntry {
+  id                     String   @id @default(uuid())
+  name                   String
+  email                  String   @unique
+  companyName            String?
+  websiteUrl             String?
+  stage                  String?
+  description            String?
+  problemSolved          String?
+  targetAudience         String?
+  willingToPay           String?
+  willingToSwitch        String?
+  status                 String   @default("PENDING")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("waitlist_entry")
+}
