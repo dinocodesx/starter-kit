@@ -18,7 +18,13 @@ test("welcome template includes the workspace name and recipient", () => {
 });
 
 test("email templates list the expected workflow templates", () => {
-  assert.deepEqual(emailTemplates, ["welcome", "upgrade", "trial-ending"]);
+  assert.deepEqual(emailTemplates, [
+    "welcome",
+    "upgrade",
+    "trial-ending",
+    "waitlist-confirmation",
+    "waitlist-admin-notification",
+  ]);
 });
 
 test("renderWelcomeEmail falls back to 'there' when userName is not provided", () => {
