@@ -69,10 +69,17 @@ export function requireNumber(entity: RazorpayEntity, key: string) {
 // ---------------------------------------------------------------------------
 
 /** Maps a raw Razorpay order entity to `UpsertRazorpayOrderInput`. */
-export function mapOrderEntity(entity: RazorpayEntity, userId?: string | null) {
+export function mapOrderEntity(entity: RazorpayEntity, userId?: string | null, paymentEntity?: RazorpayEntity | null) {
   const status = requireString(entity, "status");
   const amount = requireNumber(entity, "amount");
   const amountPaid = numberValue(entity.amount_paid) ?? 0;
+
+  let paidAt: Date | null = null;
+  if (status === "paid") {
+    const timestamp = (paymentEntity ? (numberValue(paymentEntity.created_at) ?? numberValue(paymentEntity.captured_at)) : null)
+      ?? numberValue(entity.created_at);
+    paidAt = fromUnixSeconds(timestamp) ?? new Date();
+  }
 
   return {
     userId: userId ?? null,
@@ -86,7 +93,7 @@ export function mapOrderEntity(entity: RazorpayEntity, userId?: string | null) {
     attempts: numberValue(entity.attempts) ?? 0,
     notes: objectValue(entity.notes),
     rawPayload: entity,
-    paidAt: status === "paid" ? new Date() : null,
+    paidAt,
   };
 }
 

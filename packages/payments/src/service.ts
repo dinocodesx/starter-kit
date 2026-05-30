@@ -310,7 +310,7 @@ export function createRazorpayPaymentService({
 
       const order = getWebhookEntity(payload, "order");
       if (order) {
-        await store.upsertOrder(mapOrderEntity(order));
+        await store.upsertOrder(mapOrderEntity(order, null, payment));
       }
 
       const subscription = getWebhookEntity(payload, "subscription");
