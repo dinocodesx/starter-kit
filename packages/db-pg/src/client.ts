@@ -1,9 +1,20 @@
 import {
   PrismaClient as GeneratedPrismaClient,
   EmailDeliveryStatus,
-} from "./generated/prisma/client";
+} from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
+import { config } from "dotenv";
+import path from "node:path";
+
+// Load environment variables from the monorepo root or local directory
+// if they are not already set.
+if (!process.env.DATABASE_URL) {
+  config({ path: path.resolve(process.cwd(), "../../.env") });
+  if (!process.env.DATABASE_URL) {
+    config();
+  }
+}
 
 type PrismaGlobal = typeof globalThis & {
   __smolivePrisma?: PrismaClient;
@@ -20,7 +31,10 @@ function getDatabaseUrl() {
   const connectionString = process.env.DATABASE_URL;
 
   if (!connectionString) {
-    throw new Error("DATABASE_URL is required to create the Prisma client.");
+    throw new Error(
+      "DATABASE_URL is required to create the Prisma client. " +
+        "Ensure it is set in your environment or in a .env file at the monorepo root."
+    );
   }
 
   return connectionString;
@@ -74,4 +88,4 @@ export type {
   RazorpayPlan,
   RazorpaySubscription,
   RazorpayWebhookEvent,
-} from "./generated/prisma/client";
+} from "@prisma/client";

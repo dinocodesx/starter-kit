@@ -1,6 +1,8 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { AuthPanel } from "@/components/auth-panel";
+import { Button } from "@repo/ui/button";
+import { Card } from "@repo/ui/card";
 
 export default async function Home() {
   const session = await auth.api.getSession({
@@ -32,31 +34,20 @@ export default async function Home() {
             email infrastructure with the rest of the workspace through reusable packages.
           </p>
 
+          <div className="mt-8">
+            <Button appName="Studio">UI Library Button</Button>
+          </div>
+
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
-              <div className="text-xs uppercase tracking-[0.28em] text-stone-500">
-                Auth
-              </div>
-              <div className="mt-3 text-base font-medium text-stone-950">
-                Better Auth + Google OAuth
-              </div>
-            </div>
-            <div className="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
-              <div className="text-xs uppercase tracking-[0.28em] text-stone-500">
-                Database
-              </div>
-              <div className="mt-3 text-base font-medium text-stone-950">
-                Prisma + PostgreSQL
-              </div>
-            </div>
-            <div className="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
-              <div className="text-xs uppercase tracking-[0.28em] text-stone-500">
-                Email
-              </div>
-              <div className="mt-3 text-base font-medium text-stone-950">
-                Resend delivery log
-              </div>
-            </div>
+            <Card title="Auth" href="https://better-auth.com">
+              Better Auth + Google OAuth
+            </Card>
+            <Card title="Database" href="https://prisma.io">
+              Prisma + PostgreSQL
+            </Card>
+            <Card title="Email" href="https://resend.com">
+              Resend delivery log
+            </Card>
           </div>
         </section>
 

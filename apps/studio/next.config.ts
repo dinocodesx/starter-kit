@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@creator-suite/auth",
     "@creator-suite/db-pg",
-    "@creator-suite/email"
+    "@creator-suite/email",
+    "@repo/ui"
   ]
 };
 
