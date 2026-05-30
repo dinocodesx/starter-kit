@@ -26,6 +26,7 @@
     "seed": "tsx src/seed.ts"
   },
   "dependencies": {
+    "@creator-suite/types": "workspace:*",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.0.0",
     "dotenv": "^16.4.7",

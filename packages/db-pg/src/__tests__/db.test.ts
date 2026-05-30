@@ -26,3 +26,21 @@ test("createPrismaDeliveryStore exposes the required store interface", {
   assert.strictEqual(typeof store.markSent, "function");
   assert.strictEqual(typeof store.markFailed, "function");
 });
+
+test("createPrismaRazorpayPaymentStore exposes the required store interface", {
+  skip: !hasDb ? "DATABASE_URL not set — skipping live DB test" : false,
+}, async () => {
+  const { prisma } = await import("../client.js");
+  const { createPrismaRazorpayPaymentStore } = await import("../store.js");
+  assert.strictEqual(typeof createPrismaRazorpayPaymentStore, "function");
+
+  const store = createPrismaRazorpayPaymentStore(prisma);
+  assert.strictEqual(typeof store.upsertOrder, "function");
+  assert.strictEqual(typeof store.markOrderPaid, "function");
+  assert.strictEqual(typeof store.upsertPayment, "function");
+  assert.strictEqual(typeof store.upsertPlan, "function");
+  assert.strictEqual(typeof store.upsertSubscription, "function");
+  assert.strictEqual(typeof store.findWebhookEvent, "function");
+  assert.strictEqual(typeof store.createWebhookEvent, "function");
+  assert.strictEqual(typeof store.markWebhookEventFailed, "function");
+});

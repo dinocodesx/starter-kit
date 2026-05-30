@@ -1,5 +1,5 @@
 {
-  "name": "@creator-suite/email",
+  "name": "@creator-suite/types",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -16,13 +16,5 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check-types": "tsc -p tsconfig.json"
-  },
-  "dependencies": {
-    "@creator-suite/types": "workspace:*",
-    "resend": "^4.0.0",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@types/node": "^25.9.1"
   }
 }

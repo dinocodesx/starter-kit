@@ -100,7 +100,7 @@ export async function seed() {
         template: "welcome",
         recipientEmail: user.email,
         subject: "Welcome to Smolive",
-        status: "sent",
+        status: "SENT",
       },
     });
     console.log("Seeded email delivery for user:", user.email);

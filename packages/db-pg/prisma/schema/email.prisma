@@ -1,7 +1,7 @@
 enum EmailDeliveryStatus {
-  QUEUED
-  SENT
-  FAILED
+  QUEUED @map("queued")
+  SENT   @map("sent")
+  FAILED @map("failed")
 }
 
 model EmailDelivery {

@@ -1,0 +1,125 @@
+model RazorpayOrder {
+  id              String            @id @default(uuid())
+  userId          String?
+  receipt         String            @unique
+  razorpayOrderId String            @unique
+  amount          Int
+  amountPaid      Int               @default(0)
+  amountDue       Int
+  currency        String            @default("INR")
+  status          String
+  attempts        Int               @default(0)
+  notes           Json?
+  rawPayload      Json?
+  paidAt          DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  user            User?             @relation("RazorpayOrderUser", fields: [userId], references: [id], onDelete: SetNull)
+  payments        RazorpayPayment[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("razorpay_order")
+}
+
+model RazorpayPayment {
+  id                String          @id @default(uuid())
+  orderId           String?
+  userId            String?
+  razorpayPaymentId String          @unique
+  razorpayOrderId   String?
+  amount            Int
+  currency          String          @default("INR")
+  status            String
+  method            String?
+  email             String?
+  contact           String?
+  captured          Boolean         @default(false)
+  refunded          Boolean         @default(false)
+  fee               Int?
+  tax               Int?
+  errorCode         String?
+  errorDescription  String?
+  rawPayload        Json?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  order             RazorpayOrder?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  user              User?           @relation("RazorpayPaymentUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([razorpayOrderId])
+  @@index([status])
+  @@map("razorpay_payment")
+}
+
+model RazorpayPlan {
+  id               String                 @id @default(uuid())
+  localKey         String                 @unique
+  razorpayPlanId   String                 @unique
+  name             String
+  description      String?
+  period           String
+  interval         Int
+  amount           Int
+  currency         String                 @default("INR")
+  notes            Json?
+  rawPayload       Json?
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  subscriptions    RazorpaySubscription[]
+
+  @@index([period])
+  @@map("razorpay_plan")
+}
+
+model RazorpaySubscription {
+  id                     String         @id @default(uuid())
+  userId                 String?
+  planId                 String?
+  razorpaySubscriptionId String         @unique
+  razorpayPlanId         String
+  razorpayCustomerId     String?
+  customerEmail          String?
+  status                 String
+  quantity               Int            @default(1)
+  totalCount             Int?
+  paidCount              Int?
+  remainingCount         Int?
+  currentStart           DateTime?
+  currentEnd             DateTime?
+  chargeAt               DateTime?
+  startAt                DateTime?
+  endAt                  DateTime?
+  endedAt                DateTime?
+  shortUrl               String?
+  notes                  Json?
+  rawPayload             Json?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  user                   User?          @relation("RazorpaySubscriptionUser", fields: [userId], references: [id], onDelete: SetNull)
+  plan                   RazorpayPlan?  @relation(fields: [planId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([planId])
+  @@index([razorpayPlanId])
+  @@index([status])
+  @@map("razorpay_subscription")
+}
+
+model RazorpayWebhookEvent {
+  id           String    @id @default(uuid())
+  eventId      String    @unique
+  eventType    String
+  signature    String
+  status       String    @default("processed")
+  payload      Json
+  error        String?
+  processedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([eventType])
+  @@index([status])
+  @@map("razorpay_webhook_event")
+}
