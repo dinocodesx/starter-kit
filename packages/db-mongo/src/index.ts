@@ -19,7 +19,7 @@ export async function connect(uri?: string) {
     throw new Error("MONGODB_URI is required to connect to MongoDB.");
   }
 
-  if (mongoose.connection.readyState >= 1) {
+  if (mongoose.connection.readyState === 1) {
     return mongoose.connection;
   }
 
