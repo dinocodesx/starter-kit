@@ -2,7 +2,8 @@
   "extends": "../typescript-config/server-library.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "rewriteRelativeImportExtensions": true
   },
   "include": ["src/**/*"]
 }

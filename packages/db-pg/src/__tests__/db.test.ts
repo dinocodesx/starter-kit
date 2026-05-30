@@ -7,7 +7,7 @@ test(
   "database connection returns a numeric user count",
   { skip: !hasDb ? "DATABASE_URL not set — skipping live DB test" : false },
   async () => {
-    const { prisma } = await import("../client.js");
+    const { prisma } = await import("../client");
     const userCount = await prisma.user.count();
     assert.strictEqual(typeof userCount, "number");
     await prisma.$disconnect();
@@ -17,8 +17,8 @@ test(
 test("createPrismaDeliveryStore exposes the required store interface", {
   skip: !hasDb ? "DATABASE_URL not set — skipping live DB test" : false,
 }, async () => {
-  const { prisma } = await import("../client.js");
-  const { createPrismaDeliveryStore } = await import("../store.js");
+  const { prisma } = await import("../client");
+  const { createPrismaDeliveryStore } = await import("../store");
   assert.strictEqual(typeof createPrismaDeliveryStore, "function");
 
   const store = createPrismaDeliveryStore(prisma);
@@ -30,8 +30,8 @@ test("createPrismaDeliveryStore exposes the required store interface", {
 test("createPrismaRazorpayPaymentStore exposes the required store interface", {
   skip: !hasDb ? "DATABASE_URL not set — skipping live DB test" : false,
 }, async () => {
-  const { prisma } = await import("../client.js");
-  const { createPrismaRazorpayPaymentStore } = await import("../store.js");
+  const { prisma } = await import("../client");
+  const { createPrismaRazorpayPaymentStore } = await import("../store");
   assert.strictEqual(typeof createPrismaRazorpayPaymentStore, "function");
 
   const store = createPrismaRazorpayPaymentStore(prisma);

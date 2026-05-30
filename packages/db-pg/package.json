@@ -20,7 +20,8 @@
     "prisma:migrate": "prisma migrate dev --schema prisma/schema",
     "prisma:push": "prisma db push --schema prisma/schema",
     "prisma:studio": "prisma studio --schema prisma/schema",
-    "db:seed": "tsx src/seed.ts"
+    "db:seed": "tsx src/seed.ts",
+    "test": "node --test dist/__tests__/*.js"
   },
   "prisma": {
     "seed": "tsx src/seed.ts"

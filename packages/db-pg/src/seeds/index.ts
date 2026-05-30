@@ -1,4 +1,4 @@
-import { prisma } from "../client";
+import { prisma, EmailDeliveryStatus } from "../client";
 
 /**
  * Seeds the database with a minimal, consistent set of development fixtures.
@@ -12,7 +12,7 @@ import { prisma } from "../client";
  * - **4 Accounts** — one Google OAuth account per user.
  * - **4 Verification records** — one email-verification code per user slot,
  *   valid for 24 hours.
- * - **4 EmailDelivery records** — one `sent` welcome-email delivery log per
+ * - **4 EmailDelivery records** — one `SENT` welcome-email delivery log per
  *   user, matching the template name and subject used in production.
  */
 export async function seed() {
@@ -100,7 +100,7 @@ export async function seed() {
         template: "welcome",
         recipientEmail: user.email,
         subject: "Welcome to Smolive",
-        status: "SENT",
+        status: EmailDeliveryStatus.SENT,
       },
     });
     console.log("Seeded email delivery for user:", user.email);

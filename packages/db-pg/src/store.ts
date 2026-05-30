@@ -1,3 +1,4 @@
+import { EmailDeliveryStatus } from "./client";
 import type { PrismaClient, Prisma } from "./client";
 import type {
   DeliveryRecord,
@@ -70,13 +71,13 @@ export function createPrismaDeliveryStore(prisma: PrismaClient): DeliveryStore {
           subject: data.subject,
           payload: toJsonValue(data.payload),
           provider: data.provider ?? "resend",
-          status: "QUEUED",
+          status: EmailDeliveryStatus.QUEUED,
         },
       }) as Promise<DeliveryRecord>;
     },
 
     /**
-     * Updates an existing delivery record to `sent`, storing the provider's
+     * Updates an existing delivery record to `SENT`, storing the provider's
      * message ID and the timestamp at which sending was confirmed.
      *
      * `providerMessageId` is Resend's own ID for the message and can be used
@@ -86,7 +87,7 @@ export function createPrismaDeliveryStore(prisma: PrismaClient): DeliveryStore {
       return prisma.emailDelivery.update({
         where: { id },
         data: {
-          status: "SENT",
+          status: EmailDeliveryStatus.SENT,
           providerMessageId,
           sentAt: new Date(),
         },
@@ -94,7 +95,7 @@ export function createPrismaDeliveryStore(prisma: PrismaClient): DeliveryStore {
     },
 
     /**
-     * Updates an existing delivery record to `failed` and stores the error
+     * Updates an existing delivery record to `FAILED` and stores the error
      * message for debugging.
      *
      * Called by `sendEmail` inside its `catch` block so that every failed
@@ -104,7 +105,7 @@ export function createPrismaDeliveryStore(prisma: PrismaClient): DeliveryStore {
       return prisma.emailDelivery.update({
         where: { id },
         data: {
-          status: "FAILED",
+          status: EmailDeliveryStatus.FAILED,
           error,
         },
       }) as Promise<DeliveryRecord>;
@@ -182,9 +183,9 @@ export function createPrismaRazorpayPaymentStore(
     async upsertPayment(data: UpsertRazorpayPaymentInput) {
       const order = data.razorpayOrderId
         ? await prisma.razorpayOrder.findUnique({
-            where: { razorpayOrderId: data.razorpayOrderId },
-            select: { id: true },
-          })
+          where: { razorpayOrderId: data.razorpayOrderId },
+          select: { id: true },
+        })
         : null;
       const rawPayload = toNullableJsonValue(data.rawPayload);
 

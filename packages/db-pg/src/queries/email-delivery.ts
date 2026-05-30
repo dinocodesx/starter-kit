@@ -1,7 +1,8 @@
-import type { EmailDeliveryStatus, Prisma, PrismaClient } from "../client";
+import { EmailDeliveryStatus } from "../client";
+import type { Prisma, PrismaClient } from "../client";
 
 /**
- * Inserts a new `EmailDelivery` row with status `queued`.
+ * Inserts a new `EmailDelivery` row with status `QUEUED`.
  *
  * This is the low-level query used when a send attempt begins. It persists
  * the record before the provider API is called so that every attempt is
@@ -30,13 +31,13 @@ export async function createEmailDeliveryRecord(
       subject: data.subject,
       payload: data.payload ?? {},
       provider: data.provider ?? "resend",
-      status: "queued" as EmailDeliveryStatus,
+      status: EmailDeliveryStatus.QUEUED,
     },
   });
 }
 
 /**
- * Marks an existing delivery record as `sent` and records the provider's
+ * Marks an existing delivery record as `SENT` and records the provider's
  * message ID and the time the send was confirmed.
  *
  * `providerMessageId` is the ID returned by Resend (or whichever email
@@ -51,7 +52,7 @@ export async function markEmailDeliverySent(
   return prisma.emailDelivery.update({
     where: { id },
     data: {
-      status: "sent" as EmailDeliveryStatus,
+      status: EmailDeliveryStatus.SENT,
       providerMessageId,
       sentAt: new Date(),
     },
@@ -59,7 +60,7 @@ export async function markEmailDeliverySent(
 }
 
 /**
- * Marks an existing delivery record as `failed` and stores the error message
+ * Marks an existing delivery record as `FAILED` and stores the error message
  * for debugging and potential retry logic.
  *
  * Called after a send attempt throws so that the failure is visible in the
@@ -74,7 +75,7 @@ export async function markEmailDeliveryFailed(
   return prisma.emailDelivery.update({
     where: { id },
     data: {
-      status: "failed" as EmailDeliveryStatus,
+      status: EmailDeliveryStatus.FAILED,
       error,
     },
   });

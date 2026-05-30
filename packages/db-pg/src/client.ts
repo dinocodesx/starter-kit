@@ -1,4 +1,7 @@
-import { PrismaClient as GeneratedPrismaClient } from "./generated/prisma/client";
+import {
+  PrismaClient as GeneratedPrismaClient,
+  EmailDeliveryStatus,
+} from "./generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 
@@ -61,11 +64,10 @@ if (process.env.NODE_ENV !== "production") {
   globalForPrisma.__smolivePrisma = prisma;
 }
 
-export { GeneratedPrismaClient };
+export { GeneratedPrismaClient, EmailDeliveryStatus };
 export type {
   Prisma,
   EmailDelivery,
-  EmailDeliveryStatus,
   WaitlistEntry,
   RazorpayOrder,
   RazorpayPayment,
