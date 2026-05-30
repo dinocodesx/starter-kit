@@ -9,9 +9,11 @@ import {
   renderLogoutEmail,
   renderChangelogEmail,
   renderInvoiceEmail,
+  renderAccessInvitationEmail,
   type AuthEmailTemplateInput,
   type ChangelogEmailTemplateInput,
   type InvoiceEmailTemplateInput,
+  type AccessEmailTemplateInput,
 } from "../templates/index";
 
 export interface EmailRecipient {
@@ -57,6 +59,10 @@ export interface EmailService {
   sendInvoiceEmail: (
     recipient: EmailRecipient,
     data: Omit<InvoiceEmailTemplateInput, "appName" | "userName">,
+  ) => Promise<SendEmailResult>;
+  sendAccessInvitationEmail: (
+    recipient: EmailRecipient,
+    data: Omit<AccessEmailTemplateInput, "appName" | "userName">,
   ) => Promise<SendEmailResult>;
 }
 
@@ -409,6 +415,34 @@ export function createEmailService({
     });
   }
 
+  /**
+   * Sends an invitation email for Alpha or Beta access.
+   */
+  async function sendAccessInvitationEmail(
+    recipient: EmailRecipient,
+    data: Omit<AccessEmailTemplateInput, "appName" | "userName">,
+  ) {
+    const template = renderAccessInvitationEmail({
+      appName,
+      userName: recipient.name,
+      ...data,
+    });
+
+    return sendEmail({
+      to: recipient.email,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+      template: "access-invitation",
+      userId: recipient.userId ?? null,
+      payload: {
+        appName,
+        userName: recipient.name,
+        ...data,
+      },
+    });
+  }
+
   return {
     sendEmail,
     sendWelcomeEmail,
@@ -418,5 +452,6 @@ export function createEmailService({
     sendLogoutEmail,
     sendChangelogEmail,
     sendInvoiceEmail,
+    sendAccessInvitationEmail,
   };
 }
