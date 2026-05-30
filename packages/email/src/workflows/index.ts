@@ -5,6 +5,13 @@ import {
   renderTrialEndingEmail,
   renderUpgradeEmail,
   renderWelcomeEmail,
+  renderLoginEmail,
+  renderLogoutEmail,
+  renderChangelogEmail,
+  renderInvoiceEmail,
+  type AuthEmailTemplateInput,
+  type ChangelogEmailTemplateInput,
+  type InvoiceEmailTemplateInput,
 } from "../templates/index";
 
 export interface EmailRecipient {
@@ -35,6 +42,22 @@ export interface EmailService {
   sendWelcomeEmail: (recipient: EmailRecipient) => Promise<SendEmailResult>;
   sendUpgradeEmail: (input: UpgradeEmailInput) => Promise<SendEmailResult>;
   sendTrialEndingEmail: (input: TrialEndingEmailInput) => Promise<SendEmailResult>;
+  sendLoginEmail: (
+    recipient: EmailRecipient,
+    data: Omit<AuthEmailTemplateInput, "appName" | "userName">,
+  ) => Promise<SendEmailResult>;
+  sendLogoutEmail: (
+    recipient: EmailRecipient,
+    data: Omit<AuthEmailTemplateInput, "appName" | "userName" | "location" | "device">,
+  ) => Promise<SendEmailResult>;
+  sendChangelogEmail: (
+    recipient: string | string[],
+    data: Omit<ChangelogEmailTemplateInput, "appName">,
+  ) => Promise<SendEmailResult>;
+  sendInvoiceEmail: (
+    recipient: EmailRecipient,
+    data: Omit<InvoiceEmailTemplateInput, "appName" | "userName">,
+  ) => Promise<SendEmailResult>;
 }
 
 export interface UpgradeEmailInput extends EmailRecipient {
@@ -275,10 +298,125 @@ export function createEmailService({
     });
   }
 
+  /**
+   * Sends a login notification email.
+   */
+  async function sendLoginEmail(
+    recipient: EmailRecipient,
+    data: Omit<AuthEmailTemplateInput, "appName" | "userName">,
+  ) {
+    const template = renderLoginEmail({
+      appName,
+      userName: recipient.name,
+      ...data,
+    });
+
+    return sendEmail({
+      to: recipient.email,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+      template: "login",
+      userId: recipient.userId ?? null,
+      payload: {
+        appName,
+        userName: recipient.name,
+        ...data,
+      },
+    });
+  }
+
+  /**
+   * Sends a logout notification email.
+   */
+  async function sendLogoutEmail(
+    recipient: EmailRecipient,
+    data: Omit<AuthEmailTemplateInput, "appName" | "userName" | "location" | "device">,
+  ) {
+    const template = renderLogoutEmail({
+      appName,
+      userName: recipient.name,
+      ...data,
+    });
+
+    return sendEmail({
+      to: recipient.email,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+      template: "logout",
+      userId: recipient.userId ?? null,
+      payload: {
+        appName,
+        userName: recipient.name,
+        ...data,
+      },
+    });
+  }
+
+  /**
+   * Sends a changelog or product update email.
+   *
+   * Accepts multiple recipients.
+   */
+  async function sendChangelogEmail(
+    recipient: string | string[],
+    data: Omit<ChangelogEmailTemplateInput, "appName">,
+  ) {
+    const template = renderChangelogEmail({
+      appName,
+      ...data,
+    });
+
+    return sendEmail({
+      to: recipient,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+      template: "changelog",
+      payload: {
+        appName,
+        ...data,
+      },
+    });
+  }
+
+  /**
+   * Sends an invoice/receipt email after a successful payment.
+   */
+  async function sendInvoiceEmail(
+    recipient: EmailRecipient,
+    data: Omit<InvoiceEmailTemplateInput, "appName" | "userName">,
+  ) {
+    const template = renderInvoiceEmail({
+      appName,
+      userName: recipient.name,
+      ...data,
+    });
+
+    return sendEmail({
+      to: recipient.email,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+      template: "invoice",
+      userId: recipient.userId ?? null,
+      payload: {
+        appName,
+        userName: recipient.name,
+        ...data,
+      },
+    });
+  }
+
   return {
     sendEmail,
     sendWelcomeEmail,
     sendUpgradeEmail,
     sendTrialEndingEmail,
+    sendLoginEmail,
+    sendLogoutEmail,
+    sendChangelogEmail,
+    sendInvoiceEmail,
   };
 }

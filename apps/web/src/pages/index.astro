@@ -2,6 +2,8 @@
 import { auth } from "../lib/auth";
 import Layout from "../layouts/Layout.astro";
 import { AuthPanel } from "../components/auth-panel";
+import { Button } from "@repo/ui/button";
+import { Card } from "@repo/ui/card";
 
 const session = await auth.api.getSession({
   headers: Astro.request.headers,
@@ -33,31 +35,20 @@ const sessionSummary = session
           email infrastructure with the rest of the workspace through reusable packages.
         </p>
 
+        <div class="mt-8">
+          <Button client:load appName="Web">UI Library Button</Button>
+        </div>
+
         <div class="mt-10 grid gap-4 sm:grid-cols-3">
-          <div class="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
-            <div class="text-xs uppercase tracking-[0.28em] text-stone-500">
-              Auth
-            </div>
-            <div class="mt-3 text-base font-medium text-stone-950">
-              Better Auth + Google OAuth
-            </div>
-          </div>
-          <div class="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
-            <div class="text-xs uppercase tracking-[0.28em] text-stone-500">
-              Database
-            </div>
-            <div class="mt-3 text-base font-medium text-stone-950">
-              Prisma + PostgreSQL
-            </div>
-          </div>
-          <div class="rounded-3xl border border-black/10 bg-white/80 p-5 backdrop-blur">
-            <div class="text-xs uppercase tracking-[0.28em] text-stone-500">
-              Email
-            </div>
-            <div class="mt-3 text-base font-medium text-stone-950">
-              Resend delivery log
-            </div>
-          </div>
+          <Card title="Auth" href="https://better-auth.com">
+            Better Auth + Google OAuth
+          </Card>
+          <Card title="Database" href="https://prisma.io">
+            Prisma + PostgreSQL
+          </Card>
+          <Card title="Email" href="https://resend.com">
+            Resend delivery log
+          </Card>
         </div>
       </section>
 

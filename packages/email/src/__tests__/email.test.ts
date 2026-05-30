@@ -17,6 +17,48 @@ test("welcome template includes the workspace name and recipient", () => {
   assert.match(template.text, /your workspace/);
 });
 
+import { renderLoginEmail, renderChangelogEmail, renderInvoiceEmail } from "../templates/index.js";
+
+test("login template includes timestamp and security warning", () => {
+  const template = renderLoginEmail({
+    appName: "TestApp",
+    timestamp: "2024-01-01 12:00:00",
+    location: "London, UK",
+  });
+
+  assert.match(template.subject, /New login/);
+  assert.match(template.html, /London, UK/);
+  assert.match(template.html, /secure your account/);
+});
+
+test("changelog template includes version and updates", () => {
+  const template = renderChangelogEmail({
+    appName: "TestApp",
+    version: "1.2.3",
+    publishDate: "2024-01-01",
+    updates: [{ title: "Feature X", description: "Does something cool" }],
+  });
+
+  assert.match(template.subject, /v1\.2\.3/);
+  assert.match(template.html, /Feature X/);
+  assert.match(template.html, /Does something cool/);
+});
+
+test("invoice template includes amount and items", () => {
+  const template = renderInvoiceEmail({
+    appName: "TestApp",
+    invoiceId: "INV-001",
+    invoiceDate: "2024-01-01",
+    amountPaid: "29.00",
+    currency: "$",
+    items: [{ description: "Pro Plan", amount: "29.00" }],
+  });
+
+  assert.match(template.subject, /INV-001/);
+  assert.match(template.html, /Pro Plan/);
+  assert.match(template.html, /\$29\.00/);
+});
+
 test("email templates list the expected workflow templates", () => {
   assert.deepEqual(emailTemplates, [
     "welcome",
@@ -24,6 +66,10 @@ test("email templates list the expected workflow templates", () => {
     "trial-ending",
     "waitlist-confirmation",
     "waitlist-admin-notification",
+    "login",
+    "logout",
+    "changelog",
+    "invoice",
   ]);
 });
 
@@ -89,4 +135,8 @@ test("createEmailService returns all expected methods", () => {
   assert.strictEqual(typeof service.sendWelcomeEmail, "function");
   assert.strictEqual(typeof service.sendUpgradeEmail, "function");
   assert.strictEqual(typeof service.sendTrialEndingEmail, "function");
+  assert.strictEqual(typeof service.sendLoginEmail, "function");
+  assert.strictEqual(typeof service.sendLogoutEmail, "function");
+  assert.strictEqual(typeof service.sendChangelogEmail, "function");
+  assert.strictEqual(typeof service.sendInvoiceEmail, "function");
 });

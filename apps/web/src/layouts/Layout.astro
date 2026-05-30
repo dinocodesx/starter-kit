@@ -12,6 +12,20 @@ const { title = "Auth foundation" } = Astro.props;
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+
+		<script>
+			import { initPostHog, posthog } from "@creator-suite/analytics/client";
+
+			const key = import.meta.env.PUBLIC_POSTHOG_KEY;
+			const host = import.meta.env.PUBLIC_POSTHOG_HOST;
+
+			if (key) {
+				initPostHog(key, host);
+				
+				// Optional: track initial page view if not handled by PostHog automatically
+				posthog.capture("$pageview");
+			}
+		</script>
 	</head>
 	<body>
 		<slot />
