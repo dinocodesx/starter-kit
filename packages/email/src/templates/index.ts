@@ -8,6 +8,7 @@ export const emailTemplates = [
   "logout",
   "changelog",
   "invoice",
+  "access-invitation",
 ] as const;
 
 export type EmailTemplateName = (typeof emailTemplates)[number];
@@ -19,3 +20,4 @@ export * from "./waitlist";
 export * from "./auth";
 export * from "./changelog";
 export * from "./invoice";
+export * from "./access";
